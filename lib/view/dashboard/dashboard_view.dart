@@ -12,6 +12,10 @@ class DashboardView extends StackedView<DashboardViewModel> {
   @override
   Widget builder(
       BuildContext context, DashboardViewModel viewModel, Widget? child) {
+
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -19,9 +23,9 @@ class DashboardView extends StackedView<DashboardViewModel> {
         elevation:  0.0,
         title: Row(
           children: const [
-            Spacer(),
-            Text("SyncFusion DashBoard", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 25),),
-            Spacer(),
+            const Spacer(),
+            const Text("SyncFusion DashBoard", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 25),),
+            const Spacer(),
           ],
         ),
       ),
@@ -49,7 +53,42 @@ class DashboardView extends StackedView<DashboardViewModel> {
 
                 itemBuilder: (SyncFusionWidget item) {
 
-                  return item.widget;
+                  return InkWell(
+
+                      onTap : (){
+                        // Saves current widget ID into a variable
+                        viewModel.selectedWidgetsID.contains(item.identifier) ? viewModel.selectedWidgetID = "" : viewModel.selectedWidgetID = item.identifier;
+                        viewModel.selectedWidgetsID.contains(item.identifier) ? viewModel.selectedWidgetsID.remove(item.identifier) :  viewModel.selectedWidgetsID.add(item.identifier);
+                        print("SELECTED ID  : ${viewModel.selectedWidgetID}");
+                        print("LIST ID  : ${viewModel.selectedWidgetsID}");
+
+                        viewModel.notifyListeners();
+                      },
+                      child : Container(
+                        decoration: BoxDecoration(
+                          color: viewModel.selectedWidgetsID.contains(item.identifier) ? Colors.white.withOpacity(0.9) : Colors.transparent
+                        ),
+                        child : Stack(
+                          children: [
+                            //Syncfusion Widget
+                            item.widget,
+
+                            // Check
+                            if (viewModel.selectedWidgetsID.contains(viewModel.selectedWidgetID))
+                              Container(
+                                width: width * 0.2 ,
+                                height: height * 0.2,
+                                margin: EdgeInsets.only(top: height * 0.8, left: width * 0.7, right: width * 0.01),
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(width * 0.02)
+                                ),
+                                child : const Icon(Icons.check_rounded, color: Colors.white,),
+                              )
+                          ],
+                        )
+                      ),
+                  );
                 }
             )
         ),
@@ -70,6 +109,18 @@ class DashboardView extends StackedView<DashboardViewModel> {
                       },
                     ),
                 label: ""),
+
+                if (!viewModel.editModeEnabled)
+                  BottomNavigationBarItem(
+                      icon: IconButton(
+                        icon: const Icon(Icons.delete_rounded, size: 25, color: Colors.white,),
+                        onPressed: (){
+                          viewModel.deleteSelectedWidget();
+                        },
+                      ),
+                      label: ""
+                  ),
+
                 BottomNavigationBarItem(
                     icon: IconButton(
                       icon: const Icon(Icons.add_rounded, size: 25, color: Colors.white, ),

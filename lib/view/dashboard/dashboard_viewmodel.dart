@@ -26,6 +26,9 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
   int selectedWidth = 0;
   int selectedHeight = 0;
   String selectedWidget = "Circular Chart";
+  String selectedWidgetID = "";
+  List<String> selectedWidgetsID = [];
+  bool editModeEnabled = false;
 
 
   List<DropdownMenuItem<int>> widthValues = [
@@ -98,7 +101,16 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
     }
   }
 
+  deleteSelectedWidget() {
+    // This method rmeoves current widget from controller
+    dashboardItemController.delete(selectedWidgetID);
+    selectedWidgetID = "";
+    selectedWidgetsID = [];
+    notifyListeners();
+  }
+
   void changeEditMode() {
+    dashboardItemController.isEditing ? editModeEnabled = false : editModeEnabled = true;
     dashboardItemController.isEditing ? dashboardItemController.isEditing = false : dashboardItemController.isEditing = true;
     notifyListeners();
   }

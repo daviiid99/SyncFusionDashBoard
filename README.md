@@ -8,6 +8,7 @@ DashBoard sobre el que dibujar widgets de syncFusion customizados
 
 # Dialog (Personalización del componente)
 <img src="screens/screen_dialog.png" width="200" height="400">
+<img src="screens/screen_dialog_2.png" width="200" height="400">
 
 # Home (Con Widgets)
 <img src="screens/screen_home_widgets.png" width="200" height="400">

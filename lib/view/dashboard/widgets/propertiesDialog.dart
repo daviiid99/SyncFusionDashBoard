@@ -286,7 +286,126 @@ class PropertiesDialog extends StatelessWidget{
                           ),
                         ),
 
+                        Container(
+                          width: double.maxFinite,
+                          height: height * 0.42,
+                          margin: EdgeInsets.only(top: height * 0.02, left: width * 0.05, right: width * 0.05),
+                          decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(30)
+                          ),
+                          child: Column(
+                            children: [
+                              // Title
+                              SizedBox(height: height * 0.01,),
+                              const Text("Añadir Elemento", style: TextStyle(color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold),),
+                              SizedBox(height: height * 0.02,),
+                              Row(
+                                children: [
+                                  // Left - x elements
+                                  SizedBox(
+                                    width: width * 0.31,
+                                    height: height * 0.2,
+                                    child : ListView.builder(
+                                      itemCount: viewModel.xElements.length,
+                                      itemBuilder: (context, index){
+                                        return Container(
+                                          width: width * 0.31,
+                                          height: height * 0.07,
+                                          margin: EdgeInsets.only(left: width * 0.025, right: width * 0.05),
+                                          child: TextField(
+                                            textAlign: TextAlign.center,
+                                            decoration: InputDecoration(
+                                                filled: true,
+                                                fillColor: Colors.white
+                                              ),
+                                              controller: viewModel.xElements[index],
+                                              keyboardType: TextInputType.text,
+                                            ),
+                                        );
+                                      }
+                                    ),
+                                  ),
 
+                                  SizedBox(
+                                    width: width * 0.27,
+                                    height: height * 0.2,
+                                    child : ListView.builder(
+                                      itemCount: viewModel.yElements.length,
+                                      itemBuilder: (context, index){
+                                        return Container(
+                                          width: width * 0.27,
+                                          height: height * 0.07,
+                                          margin: EdgeInsets.only(right: width * 0.025),
+                                          child: TextField(
+                                            textAlign: TextAlign.center,
+                                            decoration: InputDecoration(
+                                                  filled: true,
+                                                  fillColor: Colors.white
+                                              ),
+                                              controller: viewModel.yElements[index],
+                                              keyboardType: TextInputType.text,
+                                            ),
+                                        );
+                                      }
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+
+                              SizedBox(height: height * 0.02,),
+
+                              Container(
+                                width: double.maxFinite,
+                                height: height * 0.05,
+                                margin: EdgeInsets.only(left: width * 0.02, right: width * 0.02),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child : TextButton(
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: Colors.green,
+                                    ),
+                                    onPressed : (){
+                                      // Add one more row to both controllers
+                                      viewModel.xElements.add(TextEditingController(text: ""));
+                                      viewModel.yElements.add(TextEditingController(text: ""));
+                                      viewModel.notifyListeners();
+                                      // Just force refresh inside alertdialog to display changes
+                                      (context as Element).reassemble();
+                                    },
+                                    child: const Text("Añadir fila", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20), textAlign: TextAlign.center,),
+                                ),
+                                ),
+                              ),
+
+                              SizedBox(height: height * 0.01,),
+
+                              Container(
+                                width: double.maxFinite,
+                                height: height * 0.05,
+                                margin: EdgeInsets.only(left: width * 0.02, right: width * 0.02),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child : TextButton(
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                    ),
+                                    onPressed : (){
+                                      // Add one more row to both controllers
+                                      viewModel.xElements.removeAt(viewModel.xElements.length - 1);
+                                      viewModel.yElements.removeAt(viewModel.yElements.length - 1);
+                                      viewModel.notifyListeners();
+                                      // Just force refresh inside alertdialog to display changes
+                                      (context as Element).reassemble();
+                                    },
+                                    child: const Text("Borrar fila", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20), textAlign: TextAlign.center,),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
                         Container(
                           width: double.maxFinite,

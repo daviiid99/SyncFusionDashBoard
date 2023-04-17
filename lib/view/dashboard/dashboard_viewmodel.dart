@@ -7,6 +7,7 @@ import '../../data/model/sync_fusion_items/sync_fusion_widget_item.dart';
 import '../../data/model/sync_fusion_items/sync_fusion_widget_item_options.dart';
 import '../../data/model/sync_fusion_widgets/widgets/circular_chart.dart';
 import '../../data/model/sync_fusion_widgets/widgets/cartesian_chart.dart';
+import '../../data/model/sync_fusion_widgets/widgets/chartData.dart';
 
 class DashboardViewModel extends BaseViewModel implements Initialisable {
   DashboardItemController<SyncFusionWidget> dashboardItemController =
@@ -29,7 +30,21 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
   String selectedWidgetID = "";
   List<String> selectedWidgetsID = [];
   bool editModeEnabled = false;
+  List<TextEditingController> xElements = [
+    TextEditingController(text: ""),
+    TextEditingController(text: ""),
+    TextEditingController(text: ""),
+    TextEditingController(text: ""),
 
+  ];
+  List<TextEditingController> yElements = [
+    TextEditingController(text: ""),
+    TextEditingController(text: ""),
+    TextEditingController(text: ""),
+    TextEditingController(text: ""),
+  ];
+
+  List<ChartData> rawlist = [];
 
   List<DropdownMenuItem<int>> widthValues = [
     DropdownMenuItem(child: Text("0"),value: 0),
@@ -69,13 +84,16 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
   getWidget(){
     if(selectedWidget == "Circular Chart") {
       return CircularChart (
-      backgroundColor,
-      title
+        rawlist,
+        backgroundColor,
+        title,
+
     );
     } else if (selectedWidget == "Cartesian Chart"){
       return CartesianChart (
+          rawlist,
           backgroundColor,
-          title
+          title,
       );
     }
   }
@@ -92,7 +110,25 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
     );
   }
 
+  createDataList() async {
+    // A method to combine both TextEditingController lists
+    // Into a data list for the target widget
+
+    if (selectedWidget == "Circular Chart"){
+      int counter = 0;
+
+      while(counter < xElements.length){
+        ChartData currentRow = ChartData(xElements[counter].text, int.parse(yElements[counter].text));
+        rawlist.add(currentRow);
+        counter ++;
+      }
+      counter = 0;
+      notifyListeners();
+    }
+  }
+
   addWidgetToDashBoard() async {
+    await createDataList();
     SyncFusionWidget current = await createWidget();
     try{
       dashboardItemController.add(current); // First, create widget with given attributes
@@ -103,7 +139,11 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
 
   deleteSelectedWidget() {
     // This method rmeoves current widget from controller
-    dashboardItemController.delete(selectedWidgetID);
+
+    for (String id in selectedWidgetsID){
+      dashboardItemController.delete(id);
+    }
+
     selectedWidgetID = "";
     selectedWidgetsID = [];
     notifyListeners();

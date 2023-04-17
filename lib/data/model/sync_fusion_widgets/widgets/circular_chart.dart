@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'chartData.dart';
 
 class CircularChart extends StatelessWidget{
   @override
   CircularChart(
-  [this.backgroundColor = Colors.white,
+      this.list, [this.backgroundColor = Colors.white,
     this.title = "Titulo por defecto"]);
 
   final Color backgroundColor;
   final String title;
+  final List<ChartData> list;
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +23,14 @@ class CircularChart extends StatelessWidget{
                   backgroundColor: backgroundColor,
                   // Chart title text
                     title: ChartTitle(text: title),
+                    legend: Legend(isVisible: true),
                     series: <CircularSeries>[
                       // Render pie chart
                       PieSeries<ChartData, String>(
-                          dataSource: [
-                            // Bind data source
-                            ChartData('Jan', 35),
-                            ChartData('Feb', 28),
-                            ChartData('Mar', 34),
-                            ChartData('Apr', 32),
-                            ChartData('May', 40)
-                          ],
+                          dataSource: list,
                           xValueMapper: (ChartData data, _) => data.x,
-                          yValueMapper: (ChartData data, _) => data.y
+                          yValueMapper: (ChartData data, _) => data.y,
+                          dataLabelSettings:DataLabelSettings(isVisible : true)
                       )
                     ]
                 )
@@ -41,12 +38,4 @@ class CircularChart extends StatelessWidget{
         )
     );
   }
-}
-
-class ChartData{
-  ChartData(this.x,this.y);
-
-  final String x;
-  final int y;
-  
 }

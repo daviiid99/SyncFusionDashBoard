@@ -159,7 +159,7 @@ class PropertiesDialog extends StatelessWidget{
                                 SizedBox(height: height * 0.02,),
 
                                 BlockPicker(
-                                  availableColors: [
+                                  availableColors: const [
                                     Colors.black,
                                     Colors.grey,
                                     Colors.brown,

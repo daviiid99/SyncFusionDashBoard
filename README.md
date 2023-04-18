@@ -18,4 +18,4 @@ Se muestra haciendo una pulsación larga sobre un widget
 <img src="screens/edit_menu.png">
 
 # Home (Con Widgets editados)
-<img src="screens/screen_home_widgets_edited.png">
+<img src="screens/screen_home_widgets_edited.png" width="200" height="400">

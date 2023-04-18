@@ -15,6 +15,7 @@ DashBoard sobre el que dibujar widgets de syncFusion customizados
 
 # Menu Edición (Editar/ Eliminar Widget existente)
 Se muestra haciendo una pulsación larga sobre un widget
+
 <img src="screens/screen_edit_menu.png" width="200" height="400">
 
 # Home (Con Widgets editados)

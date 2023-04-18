@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:niveles_formacion/data/model/sync_fusion_items/sync_fusion_widget_item.dart';
+import 'package:niveles_formacion/data/model/sync_fusion_items/sync_fusion_widget_item_options.dart';
 import 'package:niveles_formacion/view/dashboard/dashboard_viewmodel.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import '../../../data/model/sync_fusion_widgets/widgets/cartesian_chart.dart';
 
 class PropertiesDialog extends StatelessWidget{
   @override
-  PropertiesDialog({
-    required this.viewModel,
-});
+  const PropertiesDialog(
+    this.viewModel,
+    this.editingMode,
+    [this.item]);
 
   final DashboardViewModel viewModel;
+  final bool editingMode;
+  final SyncFusionWidget? item;
 
   @override
   Widget build(BuildContext context){
-
-
-    return Scaffold(
-      body: Stack(
-        children: [
-        ],
+    return WillPopScope(
+      onWillPop: () => viewModel.cleanPropertiesDialog(),
+      child : Scaffold(
+        body: Stack(
+          children: [
+          ],
+        ),
       ),
     );
+
 
   }
 
@@ -68,7 +76,7 @@ class PropertiesDialog extends StatelessWidget{
                                 textAlign: TextAlign.left,),
                               const Spacer(),
                               DropdownButton(
-                                value: viewModel.selectedWidth,
+                                value: editingMode ? item?.layoutData.width : viewModel.selectedWidth,
                                 items: viewModel.widthValues,
                                 onChanged: (int? newWidth) {
                                   viewModel.selectedWidth = newWidth!;
@@ -99,7 +107,7 @@ class PropertiesDialog extends StatelessWidget{
                                   textAlign: TextAlign.left,),
                                 const Spacer(),
                                 DropdownButton(
-                                  value: viewModel.selectedHeight,
+                                  value: editingMode ? item?.layoutData.height : viewModel.selectedHeight,
                                   items: viewModel.heightValues,
                                   onChanged: (int? newHeight) {
                                     viewModel.selectedHeight = newHeight!;
@@ -130,7 +138,7 @@ class PropertiesDialog extends StatelessWidget{
                                   textAlign: TextAlign.left,),
                                 const Spacer(),
                                 DropdownButton(
-                                  value: viewModel.selectedWidget,
+                                  value: editingMode ? item?.widgetType : viewModel.selectedWidget,
                                   items: viewModel.syncFusionValues,
                                   onChanged: (String? newWidget) {
                                     viewModel.selectedWidget = newWidget!;
@@ -173,7 +181,7 @@ class PropertiesDialog extends StatelessWidget{
                                     Colors.deepPurpleAccent,
                                     Colors.indigoAccent
                                   ],
-                                    pickerColor: viewModel.backgroundColor,
+                                    pickerColor: editingMode ?  item?.backgroundColor as Color : viewModel.backgroundColor,
                                     onColorChanged: (color) {
                                       viewModel.backgroundColor = color;
                                       viewModel.notifyListeners();
@@ -206,7 +214,7 @@ class PropertiesDialog extends StatelessWidget{
                                   child : TextField(
                                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                     textAlign: TextAlign.center,
-                                    controller: viewModel.titleController,
+                                    controller: editingMode ? viewModel.titleController = TextEditingController(text: item?.title) : viewModel.titleController,
                                     decoration: InputDecoration(
                                       filled: true,
                                       fillColor: Colors.white.withOpacity(0.5),
@@ -241,7 +249,7 @@ class PropertiesDialog extends StatelessWidget{
                                   child : TextField(
                                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                     textAlign: TextAlign.center,
-                                    controller: viewModel.identifierController,
+                                    controller: editingMode ?  viewModel.identifierController = TextEditingController(text: item?.identifier) : viewModel.identifierController,
                                     decoration: InputDecoration(
                                       filled: true,
                                       fillColor: Colors.white.withOpacity(0.5),
@@ -274,7 +282,7 @@ class PropertiesDialog extends StatelessWidget{
                                   child : TextField(
                                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                     textAlign: TextAlign.center,
-                                    controller: viewModel.uidController,
+                                    controller: editingMode ?  viewModel.uidController = TextEditingController(text: item?.options.uid) : viewModel.uidController,
                                     decoration: InputDecoration(
                                       filled: true,
                                       fillColor: Colors.white.withOpacity(0.5),
@@ -414,14 +422,17 @@ class PropertiesDialog extends StatelessWidget{
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(30),
                             child : TextButton(
-                              onPressed : (){
+                              onPressed : () async {
                                 if(viewModel.uidController.text.isNotEmpty && viewModel.identifierController.text.isNotEmpty){
                                   viewModel.title = viewModel.titleController.text;
                                   viewModel.identifier = viewModel.identifierController.text;
                                   viewModel.uid = viewModel.uidController.text;
                                   viewModel.notifyListeners();
-                                  viewModel.addWidgetToDashBoard();
+                                  await viewModel.addWidgetToDashBoard();
                                   Navigator.pop(context);
+                                  viewModel.cleanPropertiesDialog();
+                                  // Just force refresh inside alertdialog to display changes
+                                  (context as Element).reassemble();
                                 }
                               },
 

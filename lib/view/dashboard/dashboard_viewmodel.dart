@@ -30,6 +30,9 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
   String selectedWidgetID = "";
   List<String> selectedWidgetsID = [];
   bool editModeEnabled = false;
+  bool enableActionMenu = false;
+  SyncFusionWidget item = SyncFusionWidget(width: 2, height: 2, title: "title", backgroundColor: Colors.white, rawList: const [], widget: null, widgetType: "", identifier: "", options: SyncFusionOptions(uid: ""));
+
   List<TextEditingController> xElements = [
     TextEditingController(text: ""),
     TextEditingController(text: ""),
@@ -81,19 +84,14 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
   }
 
 
-  getWidget(){
+  getWidget(SyncFusionWidget item){
     if(selectedWidget == "Circular Chart") {
       return CircularChart (
-        rawlist,
-        backgroundColor,
-        title,
-
+        item
     );
     } else if (selectedWidget == "Cartesian Chart"){
       return CartesianChart (
-          rawlist,
-          backgroundColor,
-          title,
+          item
       );
     }
   }
@@ -104,9 +102,13 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
     return SyncFusionWidget(
       width: width,
       height: height,
+      title: title,
+      backgroundColor: backgroundColor,
+      rawList: rawlist,
       identifier: identifier,
+      widget: getWidget(SyncFusionWidget(width: width, height: height, title: title, backgroundColor: backgroundColor, rawList: rawlist, widget: null, identifier: identifier, options: SyncFusionOptions(uid: uid), widgetType: selectedWidget)),
+      widgetType: selectedWidget,
       options: SyncFusionOptions(uid: uid),
-      widget: getWidget(),
     );
   }
 
@@ -130,6 +132,7 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
   addWidgetToDashBoard() async {
     await createDataList();
     SyncFusionWidget current = await createWidget();
+
     try{
       dashboardItemController.add(current); // First, create widget with given attributes
     } catch (e){
@@ -154,5 +157,48 @@ class DashboardViewModel extends BaseViewModel implements Initialisable {
     dashboardItemController.isEditing ? dashboardItemController.isEditing = false : dashboardItemController.isEditing = true;
     notifyListeners();
   }
+
+  void markWidgetAsSelected(SyncFusionWidget item){
+    selectedWidgetsID.contains(item.identifier) ? selectedWidgetID = "" : selectedWidgetID = item.identifier;
+    selectedWidgetsID.contains(item.identifier) ? selectedWidgetsID.remove(item.identifier) :  selectedWidgetsID.add(item.identifier);
+    notifyListeners();
+  }
+
+    closeActionMenu() async {
+    // Close action menu
+    if (enableActionMenu){
+      enableActionMenu = false;
+      notifyListeners();
+    }
+  }
+
+  reverseChartDataToLists(List<ChartData> list){
+    // This is useful to restore the ChartData list for editing
+    xElements = [];
+    yElements = [];
+    notifyListeners();
+
+    for(ChartData data in list){
+      xElements.add(TextEditingController(text: data.x));
+      yElements.add(TextEditingController(text: data.y.toString()));
+    }
+    notifyListeners();
+  }
+
+  cleanPropertiesDialog() {
+    // After submitting a new widget, clean all values
+    selectedWidth = 0;
+    selectedHeight = 0;
+    selectedWidget = "Circular Chart";
+    backgroundColor = Colors.white;
+    titleController.text = "";
+    identifierController.text = "";
+    uidController.text = "";
+    rawlist = [];
+    xElements = [TextEditingController(text: ""), TextEditingController(text: ""), TextEditingController(text: ""), TextEditingController(text: ""),];
+    yElements = [TextEditingController(text: ""), TextEditingController(text: ""), TextEditingController(text: ""), TextEditingController(text: ""),];
+    notifyListeners();
+  }
+
 
 }
